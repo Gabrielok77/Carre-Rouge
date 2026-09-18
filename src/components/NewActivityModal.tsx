@@ -23,7 +23,7 @@ export const NewActivityModal: React.FC<NewActivityModalProps> = ({ isOpen, onCl
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
     if (!title.trim() || !startDate) return;
 
@@ -32,7 +32,7 @@ export const NewActivityModal: React.FC<NewActivityModalProps> = ({ isOpen, onCl
       category,
       startDate,
       endDate: endDate || undefined,
-      city: city.trim() || 'France',
+      city: city.trim() || 'Belgique',
       location: location.trim() || city.trim(),
       description: description.trim(),
       link: link.trim() || undefined,
