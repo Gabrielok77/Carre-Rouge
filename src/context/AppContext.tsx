@@ -156,8 +156,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           createdBy: p.created_by,
           createdAt: p.created_at,
           selectedOptionId: p.selected_option_id,
-          tiedOptionIds: p.tied_option_ids,
-          autoResolvedAt: p.auto_resolved_at,
+          tiedOptionIds: p.tied_option_id,
           votes: mappedVotes.filter((v) => v.pollId === p.id),
         })));
       }
@@ -314,8 +313,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const createdAt = new Date().toISOString();
     if (isSupabaseConfigured) {
       await supabase.from('polls').insert({
-        id, title: data.title, description: data.description, deadline: data.deadline,
-        options: data.options, is_for_ag: data.isForAG, created_by: currentUser, status: 'open', created_at: createdAt
+        id, 
+        title: data.title, 
+        description: data.description, 
+        deadline: data.deadline,
+        options: data.options, 
+        is_for_ag: data.isForAG, 
+        created_by: currentUser, 
+        status: 'open', 
+        created_at: createdAt,
+        selected_option_id: data.selectedOptionId,
+        tied_option_id: data.tiedOptionIds
       });
       await loadSharedData();
     }
@@ -350,6 +358,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       id: `meet-from-poll-${Date.now()}`,
       title: targetPoll.isForAG ? 'AG Carré Rouge' : `Réunion : ${targetPoll.title}`,
       date: chosen.date,
+      endDate : chosen.date,
       location: customLoc || 'Maison des Associations',
       description: `Fixé via sondage "${targetPoll.title}"`,
       isGeneralAssembly: targetPoll.isForAG,
@@ -362,9 +371,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (isSupabaseConfigured) {
       await supabase.from('polls').update({ status: 'closed', selected_option_id: optionId, auto_resolved_at: closedAt }).eq('id', pollId);
       await supabase.from('meetings').insert({
-        id: newMeeting.id, title: newMeeting.title, date: newMeeting.date, location: newMeeting.location,
-        description: newMeeting.description, is_general_assembly: newMeeting.isGeneralAssembly,
-        status: newMeeting.status, host: newMeeting.host, planned_items: [], attendees: newMeeting.attendees
+        id: newMeeting.id, 
+        title: newMeeting.title, 
+        date: newMeeting.date, 
+        end_date: newMeeting.endDate,
+        location: newMeeting.location,
+        description: newMeeting.description, 
+        is_general_assembly: newMeeting.isGeneralAssembly,
+        status: newMeeting.status, 
+        host: newMeeting.host, 
+        planned_items: [], 
+        attendees: newMeeting.attendees
       });
       await loadSharedData();
     }
@@ -379,7 +396,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const reopenPoll = async (pollId: string, deadline?: string) => {
     if (isSupabaseConfigured) {
-      await supabase.from('polls').update({ status: 'open', selected_option_id: null, tied_option_ids: null, ...(deadline ? { deadline } : {}) }).eq('id', pollId);
+      await supabase.from('polls').update({ status: 'open', selected_option_id: null, tied_option_id: null, ...(deadline ? { deadline } : {}) }).eq('id', pollId);
       await loadSharedData();
     }
   };
@@ -394,20 +411,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // --- ACTIONS ACTIVITÉS ---
   const addExternalActivity = async (data: any) => {
     const id = `act-${Date.now()}`;
+    const createdAt = new Date().toISOString();
     if (isSupabaseConfigured) {
       await supabase.from('activities').insert({
-        id:data.id, 
+        id, 
         title: data.title, 
         category: data.category, 
         start_date: data.startDate, 
         end_date: data.endDate,
         location: data.location, 
-        city: data.city, description: 
+        city: data.city, 
+        description: 
         data.description, 
         link: data.link,
         price_info: data.priceInfo, 
-        added_by: currentUser, 
-        interested_users: [currentUser]
+        created_by: currentUser, 
+        created_at: createdAt,
+        interested_users: [currentUser],
       });
       await loadSharedData();
     }
@@ -438,8 +458,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const id = `item-${Date.now()}`;
     if (isSupabaseConfigured) {
       await supabase.from('item_ideas').insert({
-        id, title: data.title, author: currentUser, description: data.description,
-        bgg_url: data.bggUrl, status: data.status, upvotes: [currentUser], comments: []
+        id, 
+        title: data.title, 
+        author: currentUser, 
+        description: data.description,
+        bgg_url: data.bggUrl, 
+        status: data.status, 
+        upvotes: [currentUser], 
+        comments: []
       });
       await loadSharedData();
     }
