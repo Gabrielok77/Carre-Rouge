@@ -174,7 +174,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           host: m.host,
           plannedItems: m.planned_items || [],
           attendees: m.attendees || [],
-          maxParticipants: m.max_participants,
         })));
       }
 
@@ -275,7 +274,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if ('isGeneralAssembly' in updates) { dbUpdates.is_general_assembly = updates.isGeneralAssembly; delete dbUpdates.isGeneralAssembly; }
       if ('plannedItems' in updates) { dbUpdates.planned_items = updates.plannedItems; delete dbUpdates.plannedItems; }
       if ('endDate' in updates) { dbUpdates.end_date = updates.endDate; delete dbUpdates.endDate; }
-      if ('maxParticipants' in updates) { dbUpdates.max_participants = updates.maxParticipants; delete dbUpdates.maxParticipants; }
       
       await supabase.from('meetings').update(dbUpdates).eq('id', id);
       await loadSharedData();
@@ -367,7 +365,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     if (isSupabaseConfigured) {
-      await supabase.from('polls').update({ status: 'closed', selected_option_id: optionId, auto_resolved_at: closedAt }).eq('id', pollId);
+      await supabase.from('polls').update({ status: 'closed', selected_option_id: optionId }).eq('id', pollId);
       await supabase.from('meetings').insert({
         id: newMeeting.id, 
         title: newMeeting.title, 
@@ -422,7 +420,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         data.description, 
         link: data.link,
         price_info: data.priceInfo, 
-        created_by: currentUser,
+        added_by: currentUser,
         interested_users: [currentUser],
       });
       await loadSharedData();
