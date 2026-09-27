@@ -74,6 +74,8 @@ export const NewActivityModal: React.FC<NewActivityModalProps> = ({ isOpen, onCl
               Nom de l'événement*
             </label>
             <input
+              id = "activity-name-id"
+              name = "activityname"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}

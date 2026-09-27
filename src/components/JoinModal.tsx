@@ -71,6 +71,8 @@ export const JoinModal: React.FC<JoinModalProps> = ({ tokenFromUrl, onSuccess, o
                 Votre Prénom / Nom / Pseudonyme
               </label>
               <input
+                id= "join-modal-id"
+                name="Join Modal"
                 type="text"
                 required
                 value={name}

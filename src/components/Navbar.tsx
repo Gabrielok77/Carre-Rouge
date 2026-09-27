@@ -182,6 +182,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               {isAddingUser ? (
                 <form onSubmit={handleAddUserSubmit} className="flex items-center gap-1">
                   <input
+                    id= "navbar-id"
+                    name = "Navbar"
                     type="text"
                     value={newUserName}
                     onChange={(e) => setNewUserName(e.target.value)}
