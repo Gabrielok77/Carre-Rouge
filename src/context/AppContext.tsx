@@ -310,7 +310,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // --- ACTIONS SONDAGES ---
   const addPoll = async (data: any) => {
     const id = `poll-${Date.now()}`;
-    const createdAt = new Date().toISOString();
     if (isSupabaseConfigured) {
       await supabase.from('polls').insert({
         id, 
@@ -320,8 +319,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         options: data.options, 
         is_for_ag: data.isForAG, 
         created_by: currentUser, 
-        status: 'open', 
-        created_at: createdAt,
+        status: 'open',
         selected_option_id: data.selectedOptionId,
         tied_option_id: data.tiedOptionIds
       });
@@ -411,7 +409,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // --- ACTIONS ACTIVITÉS ---
   const addExternalActivity = async (data: any) => {
     const id = `act-${Date.now()}`;
-    const createdAt = new Date().toISOString();
     if (isSupabaseConfigured) {
       await supabase.from('activities').insert({
         id, 
@@ -425,8 +422,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         data.description, 
         link: data.link,
         price_info: data.priceInfo, 
-        created_by: currentUser, 
-        created_at: createdAt,
+        created_by: currentUser,
         interested_users: [currentUser],
       });
       await loadSharedData();
@@ -487,7 +483,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const addItemComment = async (id: string, text: string) => {
     const item = ItemIdeas.find(x => x.id === id);
     if (!item) return;
-    const comment = { id: `c-${Date.now()}`, author: currentUser, text, createdAt: new Date().toISOString() };
+    const comment = { id: `c-${Date.now()}`, author: currentUser, text};
     const next = [...item.comments, comment];
     if (isSupabaseConfigured) {
       await supabase.from('item_ideas').update({ comments: next }).eq('id', id);
