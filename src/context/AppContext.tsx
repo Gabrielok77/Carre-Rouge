@@ -396,9 +396,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const id = `act-${Date.now()}`;
     if (isSupabaseConfigured) {
       await supabase.from('activities').insert({
-        id, title: data.title, category: data.category, start_date: data.startDate, end_date: data.endDate,
-        location: data.location, city: data.city, description: data.description, link: data.link,
-        price_info: data.priceInfo, added_by: currentUser, interested_users: [currentUser]
+        id:data.id, 
+        title: data.title, 
+        category: data.category, 
+        start_date: data.startDate, 
+        end_date: data.endDate,
+        location: data.location, 
+        city: data.city, description: 
+        data.description, 
+        link: data.link,
+        price_info: data.priceInfo, 
+        added_by: currentUser, 
+        interested_users: [currentUser]
       });
       await loadSharedData();
     }
