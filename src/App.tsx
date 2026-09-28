@@ -31,19 +31,6 @@ const AppContent: React.FC = () => {
   return (
     <div className="min-h-screen bg-stone-100/60 text-stone-900 flex flex-col font-sans selection:bg-amber-200">
       {/* En-tête unique */}
-      <header className="bg-white border-b border-stone-200 sticky top-0 z-50 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-red-600 rounded-lg shadow-sm flex items-center justify-center">
-              <span className="text-white font-bold">CR</span>
-            </div>
-            <span className="font-black text-stone-900 text-lg tracking-tight">
-              AG Carré Rouge
-            </span>
-          </div>
-          {/* Navigation par onglets (optionnelle ou pilotée par activeTab) */}
-        </div>
-      </header>
 
       {/* Contenu principal dynamique basé sur les onglets */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6">
