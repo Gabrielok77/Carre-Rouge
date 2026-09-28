@@ -12,17 +12,15 @@ import { ReportsPage } from './components/ReportsPage';
 import { Square } from 'lucide-react';
 
 const AppContent: React.FC = () => {
-  const { activeTab, setActiveTab } = useApp();
+  const { activeTab, setActiveTab, setCurrentUser, loadSharedData } = useApp();
 
   const [isNewPollOpen, setIsNewPollOpen] = useState(false);
   const [isNewMeetingOpen, setIsNewMeetingOpen] = useState(false);
   const [isNewActivityOpen, setIsNewActivityOpen] = useState(false);
   const [isNewIdeaOpen, setIsNewIdeaOpen] = useState(false);
-  const { setCurrentUser, loadSharedData } = useApp();
   const [inviteToken, setInviteToken] = useState<string | null>(null);
 
   useEffect(() => {
-    // 1. Lire le paramètre ?token=... dans l'URL
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
     if (token) {
@@ -32,38 +30,22 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-stone-100/60 text-stone-900 flex flex-col font-sans selection:bg-amber-200">
-     <AppProvider>
-      <div className="min-h-screen bg-stone-50 font-sans">
-        
-        {/* Profile Selector Area */}
-        <header className="bg-white border-b border-stone-200 sticky top-0 z-50 shadow-xs">
-          <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-            {/* Logo / Identité visuelle */}
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-red-600 rounded-lg shadow-sm flex items-center justify-center">
-                <span className="text-white font-bold">CR</span>
-              </div>
-              <span className="font-black text-stone-900 text-lg tracking-tight">
-                AG Carré Rouge
-              </span>
+      {/* En-tête unique */}
+      <header className="bg-white border-b border-stone-200 sticky top-0 z-50 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-red-600 rounded-lg shadow-sm flex items-center justify-center">
+              <span className="text-white font-bold">CR</span>
             </div>
+            <span className="font-black text-stone-900 text-lg tracking-tight">
+              AG Carré Rouge
+            </span>
           </div>
-        </header>
+          {/* Navigation par onglets (optionnelle ou pilotée par activeTab) */}
+        </div>
+      </header>
 
-        {/* CONTENU PRINCIPAL DYNAMIQUE */}
-        <main className="max-w-5xl mx-auto p-4">
-          <HomeDashboard 
-            onOpenNewMeeting={() => console.log('Ouvrir modal réunion')} 
-            onOpenNewPoll={() => console.log('Ouvrir modal sondage')} 
-            onOpenNewActivity={() => console.log('Ouvrir modal activité')} 
-            onOpenNewIdea={() => console.log('Ouvrir modal idée')} 
-          />
-        </main>
-        
-      </div>
-    </AppProvider>
-     
-      {/* Main Content Area */}
+      {/* Contenu principal dynamique basé sur les onglets */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         {activeTab === 'home' && (
           <HomeDashboard
@@ -88,28 +70,13 @@ const AppContent: React.FC = () => {
         {activeTab === 'reports' && <ReportsPage />}
       </main>
 
-      {/* Global Modals */}
-      <NewPollModal
-        isOpen={isNewPollOpen}
-        onClose={() => setIsNewPollOpen(false)}
-      />
+      {/* Modales globales */}
+      <NewPollModal isOpen={isNewPollOpen} onClose={() => setIsNewPollOpen(false)} />
+      <NewMeetingModal isOpen={isNewMeetingOpen} onClose={() => setIsNewMeetingOpen(false)} />
+      <NewActivityModal isOpen={isNewActivityOpen} onClose={() => setIsNewActivityOpen(false)} />
+      <NewIdeaModal isOpen={isNewIdeaOpen} onClose={() => setIsNewIdeaOpen(false)} />
 
-      <NewMeetingModal
-        isOpen={isNewMeetingOpen}
-        onClose={() => setIsNewMeetingOpen(false)}
-      />
-
-      <NewActivityModal
-        isOpen={isNewActivityOpen}
-        onClose={() => setIsNewActivityOpen(false)}
-      />
-
-      <NewIdeaModal
-        isOpen={isNewIdeaOpen}
-        onClose={() => setIsNewIdeaOpen(false)}
-      />
-
-      {/* Footer */}
+      {/* Pied de page */}
       <footer className="bg-stone-900 text-stone-400 text-xs py-8 border-t border-stone-800 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-stone-300">
@@ -118,7 +85,6 @@ const AppContent: React.FC = () => {
             <span className="text-stone-600">|</span>
             <span>TypeScript & React</span>
           </div>
-
           <div className="flex items-center gap-4 text-stone-400">
             <span className="hidden sm:inline">
               Assemblées • Mobilisations • Disponibilités • Idées
@@ -127,14 +93,13 @@ const AppContent: React.FC = () => {
         </div>
       </footer>
 
-      {/* Si un token est présent dans l'URL, on affiche la modale d'inscription */}
+      {/* Gestion de l'invitation par token URL */}
       {inviteToken && (
         <JoinModal
           tokenFromUrl={inviteToken}
           onSuccess={(newUserName) => {
             setCurrentUser(newUserName);
             setInviteToken(null);
-            // Nettoie l'URL sans recharger la page
             window.history.replaceState({}, document.title, window.location.pathname);
             void loadSharedData();
           }}
