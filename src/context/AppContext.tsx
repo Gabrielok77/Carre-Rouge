@@ -225,18 +225,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const setCurrentUser = (name: string) => { setCurrentUserState(name); };
 
-  const addNewUser = async (name: string) => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    const exists = availableUsers.some((u) => u.name.toLowerCase() === trimmed.toLowerCase());
-    if (!exists) {
-      const newUser: UserProfile = { id: `u-${Date.now()}`, name: trimmed, role: 'member' };
+const addNewUser = async (name: string) => {
+    const sanitizedName = name.replace(/\s+/g, ' ').trim();
+    if (!sanitizedName) return;
+
+    const existingUser = availableUsers.find(
+      (u) => u.name.toLowerCase() === sanitizedName.toLowerCase()
+    );
+
+    if (existingUser) {
+      setCurrentUser(existingUser.name);
+    } else {
+      const newUser: UserProfile = { id: `u-${Date.now()}`, name: sanitizedName, role: 'member' };
       setAvailableUsers((prev) => [...prev, newUser]);
       if (isSupabaseConfigured) {
-        await supabase.from('users').insert({ id: newUser.id, name: newUser.name, role: newUser.role });
+        await supabase.from('users').insert({ 
+          id: newUser.id, 
+          name: newUser.name, 
+          role: newUser.role 
+        });
       }
+      setCurrentUser(sanitizedName);
     }
-    setCurrentUser(trimmed);
   };
 
   const nextMeeting = meetings.filter((m) => m.status === 'scheduled')
