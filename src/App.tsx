@@ -10,7 +10,6 @@ import { JoinModal } from './components/JoinModal';
 import { NewIdeaModal } from './components/NewIdeaModal';
 import { ReportsPage } from './components/ReportsPage';
 import { Square } from 'lucide-react';
-import { ProfileSelector } from './components/ProfileSelector';
 
 const AppContent: React.FC = () => {
   const { activeTab, setActiveTab } = useApp();
@@ -48,9 +47,6 @@ const AppContent: React.FC = () => {
                 AG Carré Rouge
               </span>
             </div>
-            
-            {/* SÉLECTEUR DE PROFIL */}
-            <ProfileSelector />
           </div>
         </header>
 
