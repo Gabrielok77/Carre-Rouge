@@ -137,8 +137,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       const mappedVotes = (votesRes.data || []).map((v: any) => ({
         pollId: v.poll_id,
-        userId: v.user_id,
-        userName: v.user_name,
+        userId: v.member_id,
+        userName: v.member_name,
         responses: v.responses || {},
         updatedAt: v.updated_at,
         comment: v.comment || undefined,
@@ -349,9 +349,12 @@ const addNewUser = async (name: string) => {
     const updatedAt = new Date().toISOString();
     if (isSupabaseConfigured) {
       await supabase.from('votes').upsert({
-        poll_id: pollId, user_id: `u-${currentUser}`, user_name: currentUser,
-        responses, comment: comment?.trim() || null, updated_at: updatedAt
-      }, { onConflict: 'poll_id,user_id' });
+        poll_id: pollId, 
+        member_id: `u-${currentUser}`, 
+        member_name: currentUser,
+        responses, 
+        comment: comment?.trim() || null, updated_at: updatedAt
+      }, { onConflict: 'poll_id,member_id' });
       await loadSharedData();
     }
   };
@@ -527,7 +530,7 @@ const addNewUser = async (name: string) => {
     if (window.confirm("Voulez-vous vraiment réinitialiser toutes les données sur Supabase ?")) {
         if (isSupabaseConfigured) {
             await Promise.all([
-              supabase.from('votes').delete().neq('user_id', '0'),
+              supabase.from('votes').delete().neq('member_id', '0'),
               supabase.from('polls').delete().neq('id', '0'),
               supabase.from('meetings').delete().neq('id', '0'),
               supabase.from('activities').delete().neq('id', '0'),
