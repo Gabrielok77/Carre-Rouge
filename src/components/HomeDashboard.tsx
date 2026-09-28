@@ -118,6 +118,36 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
     <div className="space-y-8 pb-12">
       {/* Top Welcome & Quick Highlights */}
       <div className="bg-gradient-to-r from-stone-900 via-stone-800 to-amber-950 text-white rounded-3xl p-6 sm:p-8 shadow-md">
+                {!isEditingProfile ? (
+          <button 
+            onClick={() => { setIsEditingProfile(true); setProfileInputValue(currentUser); }}
+            className="flex items-center gap-2 px-3 py-1.5 bg-stone-800/80 hover:bg-stone-700 border border-stone-600 rounded-xl transition-colors text-sm font-bold shadow-xs"
+            title="Changer d'utilisateur"
+            >
+            <User className="w-4 h-4 text-amber-400" />
+            <span>{currentUser}</span>
+            </button>
+          ) : (
+            <form onSubmit={handleProfileSubmit} className="flex items-center gap-1.5 bg-stone-800 p-1 border border-amber-500/50 rounded-xl shadow-md">
+              <input
+                list="user-datalist"
+                type="text"
+                value={profileInputValue}
+                onChange={(e) => setProfileInputValue(e.target.value)}
+                className="w-32 sm:w-48 text-sm px-2 py-1 outline-hidden rounded-lg bg-stone-900 text-white placeholder-stone-400 border border-stone-700"
+                autoFocus
+              />
+              <datalist id="user-datalist">
+                {availableUsers.map((u) => <option key={u.id} value={u.name} />)}
+              </datalist>
+              <button type="submit" className="p-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg">
+                <Check className="w-4 h-4" />
+              </button>
+              <button type="button" onClick={() => setIsEditingProfile(false)} className="p-1 text-stone-400 hover:text-rose-400">
+                <X className="w-4 h-4" />
+              </button>
+            </form>
+          )}
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 mb-3">
             <Square className="w-3.5 h-3.5" />
@@ -153,39 +183,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           </div>
         </div>
       </div>
-      {/* BOUTON DE CHANGEMENT D'UTILISATEUR */}
-      <div className="absolute top-6 right-6 z-10">
-        {!isEditingProfile ? (
-          <button 
-            onClick={() => { setIsEditingProfile(true); setProfileInputValue(currentUser); }}
-            className="flex items-center gap-2 px-3 py-1.5 bg-stone-800/80 hover:bg-stone-700 border border-stone-600 rounded-xl transition-colors text-sm font-bold shadow-xs"
-            title="Changer d'utilisateur"
-            >
-            <User className="w-4 h-4 text-amber-400" />
-            <span>{currentUser}</span>
-            </button>
-          ) : (
-            <form onSubmit={handleProfileSubmit} className="flex items-center gap-1.5 bg-stone-800 p-1 border border-amber-500/50 rounded-xl shadow-md">
-              <input
-                list="user-datalist"
-                type="text"
-                value={profileInputValue}
-                onChange={(e) => setProfileInputValue(e.target.value)}
-                className="w-32 sm:w-48 text-sm px-2 py-1 outline-hidden rounded-lg bg-stone-900 text-white placeholder-stone-400 border border-stone-700"
-                autoFocus
-              />
-              <datalist id="user-datalist">
-                {availableUsers.map((u) => <option key={u.id} value={u.name} />)}
-              </datalist>
-              <button type="submit" className="p-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg">
-                <Check className="w-4 h-4" />
-              </button>
-              <button type="button" onClick={() => setIsEditingProfile(false)} className="p-1 text-stone-400 hover:text-rose-400">
-                <X className="w-4 h-4" />
-              </button>
-            </form>
-          )}
-        </div>
       {/* CORE SECTION : Strict 3-Condition Logic as requested */}
       <section id="section-next-meeting-or-poll" className="space-y-3">
         <div className="flex items-center justify-between">
