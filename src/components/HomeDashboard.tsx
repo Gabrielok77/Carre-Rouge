@@ -15,18 +15,11 @@ import {
   Plus,
   ArrowRight,
   Lightbulb,
-  Sparkles,
-  ExternalLink,
-  MessageSquare,
+  Square,
   Vote,
   CalendarPlus,
-  Square,
-  ShieldCheck,
   Heart,
-  Tag,
-  Share2,
 } from 'lucide-react';
-
 
 interface HomeDashboardProps {
   onOpenNewMeeting: () => void;
@@ -34,6 +27,7 @@ interface HomeDashboardProps {
   onOpenNewActivity: () => void;
   onOpenNewIdea: () => void;
 }
+
 export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   onOpenNewMeeting,
   onOpenNewPoll,
@@ -42,6 +36,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
 }) => {
   const {
     currentUser,
+    addNewUser, // Fusionné ici
     nextMeeting,
     activePoll,
     rsvpMeeting,
@@ -52,15 +47,15 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
     availableUsers,
   } = useApp();
 
-  const { addNewUser } = useApp();
-  const [inputValue, setInputValue] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
   const [rsvpNote, setRsvpNote] = useState('');
   const [showRsvpNoteInput, setShowRsvpNoteInput] = useState(false);
   const [newItemSuggestion, setNewItemSuggestion] = useState('');
   const [isAddingPlannedItem, setIsAddingPlannedItem] = useState(false);
 
-  // Determine current user RSVP status for the next meeting
+  // États du sélecteur de profil
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileInputValue, setProfileInputValue] = useState('');
+
   const currentUserRsvp = nextMeeting?.attendees.find((a) => a.userName === currentUser);
 
   const handleRsvp = (status: RSVPStatus) => {
@@ -78,21 +73,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
     setIsAddingPlannedItem(false);
   };
 
-  // Format date nicely in French
-  const formatFrenchDate = (dateStr: string) => {
-    return formatDateDDMMYYYY(dateStr);
-  };
-
-  const formatFrenchTime = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleTimeString('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [profileInputValue, setProfileInputValue] = useState('');
-
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const sanitizedName = profileInputValue.replace(/\s+/g, ' ').trim();
@@ -101,7 +81,14 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
     }
     setIsEditingProfile(false);
   };
-  // Calculate days remaining
+
+  const formatFrenchDate = (dateStr: string) => formatDateDDMMYYYY(dateStr);
+
+  const formatFrenchTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  };
+
   const getDaysRemaining = (dateStr: string) => {
     const target = new Date(dateStr).getTime();
     const now = new Date().getTime();
@@ -111,21 +98,23 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
     return `Dans ${diffDays} jours`;
   };
 
-  const confirmedAttendees =
-    nextMeeting?.attendees.filter((a) => a.status === 'confirmed') || [];
+  const confirmedAttendees = nextMeeting?.attendees.filter((a) => a.status === 'confirmed') || [];
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Top Welcome & Quick Highlights */}
-      <div className="bg-gradient-to-r from-stone-900 via-stone-800 to-amber-950 text-white rounded-3xl p-6 sm:p-8 shadow-md">
-                {!isEditingProfile ? (
-          <button 
-            onClick={() => { setIsEditingProfile(true); setProfileInputValue(currentUser); }}
-            className="flex items-center gap-2 px-3 py-1.5 bg-stone-800/80 hover:bg-stone-700 border border-stone-600 rounded-xl transition-colors text-sm font-bold shadow-xs"
-            title="Changer d'utilisateur"
+      {/* Top Welcome & Quick Highlights - CORRIGÉ AVEC "relative" */}
+      <div className="bg-gradient-to-r from-stone-900 via-stone-800 to-amber-950 text-white rounded-3xl p-6 sm:p-8 shadow-md relative">
+        
+        {/* BOUTON UTILISATEUR - ENCAPSULÉ DANS SA DIV ABSOLUE */}
+        <div className="absolute top-6 right-6 z-10">
+          {!isEditingProfile ? (
+            <button 
+              onClick={() => { setIsEditingProfile(true); setProfileInputValue(currentUser); }}
+              className="flex items-center gap-2 px-3 py-1.5 bg-stone-800/80 hover:bg-stone-700 border border-stone-600 rounded-xl transition-colors text-sm font-bold shadow-xs"
+              title="Changer d'utilisateur"
             >
-            <User className="w-4 h-4 text-amber-400" />
-            <span>{currentUser}</span>
+              <User className="w-4 h-4 text-amber-400" />
+              <span>{currentUser}</span>
             </button>
           ) : (
             <form onSubmit={handleProfileSubmit} className="flex items-center gap-1.5 bg-stone-800 p-1 border border-amber-500/50 rounded-xl shadow-md">
@@ -148,7 +137,10 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               </button>
             </form>
           )}
-        <div className="max-w-3xl">
+        </div>
+
+        {/* CONTENU TEXTE - CORRIGÉ AVEC PADDING DROITE */}
+        <div className="max-w-3xl pr-32 sm:pr-48">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 mb-3">
             <Square className="w-3.5 h-3.5" />
             <span>Espace d'organisation communautaire</span>
@@ -183,7 +175,8 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           </div>
         </div>
       </div>
-      {/* CORE SECTION : Strict 3-Condition Logic as requested */}
+
+      {/* CORE SECTION : Strict 3-Condition Logic */}
       <section id="section-next-meeting-or-poll" className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -213,7 +206,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         {/* CONDITION 1 : NEXT MEETING EXISTS */}
         {nextMeeting && (
           <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden transition-all hover:border-amber-300">
-            {/* Top Bar with Date & Countdown */}
             <div className="p-6 bg-gradient-to-r from-amber-50 to-red-50/40 border-b border-stone-200/80">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
@@ -306,9 +298,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               </div>
             </div>
 
-            {/* Content Body */}
             <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left Column: Description & Planned games */}
               <div className="lg:col-span-2 space-y-5">
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">
@@ -319,7 +309,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                   </p>
                 </div>
 
-                {/* Planned Games Section */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-xs font-bold uppercase tracking-wider text-stone-400 flex items-center gap-1.5">
@@ -384,7 +373,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 </div>
               </div>
 
-              {/* Right Column: Attendees List */}
               <div className="bg-stone-50 rounded-xl p-4 border border-stone-200/80">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500">
@@ -463,7 +451,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           </div>
         )}
 
-        {/* CONDITION 2 : NO MEETING, BUT A POLL IS AVAILABLE (AG or Session) */}
+        {/* CONDITION 2 : NO MEETING, BUT A POLL IS AVAILABLE */}
         {!nextMeeting && activePoll && (
           <div className="space-y-3">
             <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-center justify-between">
@@ -475,12 +463,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 </span>
               </div>
             </div>
-
             <PollVoteCard poll={activePoll} />
           </div>
         )}
 
-        {/* CONDITION 3 : NO MEETING AND NO POLL AVAILABLE -> MESSAGE TO CREATE A POLL */}
+        {/* CONDITION 3 : NO MEETING AND NO POLL AVAILABLE */}
         {!nextMeeting && !activePoll && (
           <div
             id="empty-poll-banner"
@@ -523,7 +510,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         )}
       </section>
 
-      {/* ACCESS TO OTHER PAGES SECTION (Requested: "donnant accès aux autres pages") */}
+      {/* ACCESS TO OTHER PAGES SECTION */}
       <section className="space-y-4 pt-4 border-t border-stone-200">
         <div className="flex items-center justify-between">
           <div>
@@ -537,7 +524,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Card 1 : Calendrier & Activités extérieures */}
           <div
             id="home-card-calendar"
             onClick={() => setActiveTab('calendar')}
@@ -560,7 +546,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 Consultez l'agenda complet : AG, manifs, conférences,...
               </p>
 
-              {/* Preview of next 2 external events */}
               <div className="mt-4 space-y-2">
                 {externalActivities.slice(0, 2).map((act) => (
                   <div
@@ -588,7 +573,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </div>
           </div>
 
-          {/* Card 2 : Boîte à idées */}
           <div
             id="home-card-ideas"
             onClick={() => setActiveTab('ideas')}
@@ -611,7 +595,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 Partagez vos idées sur la mobilisation, l'organisation, les manifs ou juste votre mood vis à vis de la lutte.
               </p>
 
-              {/* Preview of top voted game */}
               <div className="mt-4 space-y-2">
                 {ItemIdeas.slice(0, 2).map((item) => (
                   <div
