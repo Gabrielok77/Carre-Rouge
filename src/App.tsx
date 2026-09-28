@@ -30,9 +30,49 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-stone-100/60 text-stone-900 flex flex-col font-sans selection:bg-amber-200">
-      {/* En-tête unique */}
+      {/* En-tête avec la barre de navigation retrouvée */}
+      <header className="bg-white border-b border-stone-200 sticky top-0 z-50 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('home')}>
+            <div className="w-8 h-8 bg-red-600 rounded-lg shadow-sm flex items-center justify-center">
+              <span className="text-white font-bold">CR</span>
+            </div>
+            <span className="font-black text-stone-900 text-lg tracking-tight">
+              AG Carré Rouge
+            </span>
+          </div>
 
-      {/* Contenu principal dynamique basé sur les onglets */}
+          {/* Barre de navigation des pages */}
+          <nav className="flex items-center gap-1 sm:gap-2 text-xs font-bold">
+            <button 
+              onClick={() => setActiveTab('home')} 
+              className={`px-3 py-1.5 rounded-xl transition-colors ${activeTab === 'home' ? 'bg-amber-100 text-amber-900' : 'text-stone-600 hover:bg-stone-100'}`}
+            >
+              Accueil
+            </button>
+            <button 
+              onClick={() => setActiveTab('calendar')} 
+              className={`px-3 py-1.5 rounded-xl transition-colors ${activeTab === 'calendar' ? 'bg-amber-100 text-amber-900' : 'text-stone-600 hover:bg-stone-100'}`}
+            >
+              Calendrier
+            </button>
+            <button 
+              onClick={() => setActiveTab('ideas')} 
+              className={`px-3 py-1.5 rounded-xl transition-colors ${activeTab === 'ideas' ? 'bg-amber-100 text-amber-900' : 'text-stone-600 hover:bg-stone-100'}`}
+            >
+              Boîte à idées
+            </button>
+            <button 
+              onClick={() => setActiveTab('reports')} 
+              className={`px-3 py-1.5 rounded-xl transition-colors ${activeTab === 'reports' ? 'bg-amber-100 text-amber-900' : 'text-stone-600 hover:bg-stone-100'}`}
+            >
+              PV des réunions
+            </button>
+          </nav>
+        </div>
+      </header>
+
+      {/* Contenu principal dynamique */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         {activeTab === 'home' && (
           <HomeDashboard
