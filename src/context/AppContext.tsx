@@ -217,10 +217,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     void loadSharedData();
     if (!isSupabaseConfigured) return;
-    const channel = supabase.channel('carre-rouge-sync')
-      .on('postgres_changes', { event: '*', schema: 'public' }, () => { void loadSharedData(); })
+
+    // 1. Génération d'un nom de canal unique pour esquiver le cache de montage
+    const channelName = `carre-rouge-sync-${Date.now()}`;
+
+    // 2. Chaînage strict : création -> écoute -> souscription
+    const channel = supabase.channel(channelName)
+      .on('postgres_changes', { event: '*', schema: 'public' }, () => { 
+        void loadSharedData(); 
+      })
       .subscribe();
-    return () => { void supabase.removeChannel(channel); };
+
+    return () => { 
+      void supabase.removeChannel(channel); 
+    };
   }, [loadSharedData]);
 
   const setCurrentUser = (name: string) => { setCurrentUserState(name); };
