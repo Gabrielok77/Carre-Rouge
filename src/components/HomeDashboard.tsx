@@ -106,7 +106,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
       <div className="bg-gradient-to-r from-stone-900 via-stone-800 to-amber-950 text-white rounded-3xl p-6 sm:p-8 shadow-md relative">
         
         {/* BOUTON UTILISATEUR - ENCAPSULÉ DANS SA DIV ABSOLUE */}
-        <div className="absolute top-6 right-6 z-10">
+        <div className="top-6 right-6 z-10">
           {!isEditingProfile ? (
             <button 
               onClick={() => { setIsEditingProfile(true); setProfileInputValue(currentUser); }}
